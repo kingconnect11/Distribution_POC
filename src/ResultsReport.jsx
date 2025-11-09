@@ -1,8 +1,15 @@
 import { getCitationConfig } from './citationConfigs.js';
+import HomeButton from './components/HomeButton.jsx';
 
 function ResultsReport({ result, formData, onBackToForm }) {
   const formatCurrency = (amount) => {
-    return `$${amount.toFixed(2)}`;
+    // Add defensive check for null/undefined/non-number values
+    const num = parseFloat(amount);
+    if (isNaN(num)) {
+      console.error('formatCurrency received invalid amount:', amount);
+      return '$0.00';
+    }
+    return `$${num.toFixed(2)}`;
   };
 
   const getEntityColorClass = (entity) => {
@@ -66,7 +73,10 @@ function ResultsReport({ result, formData, onBackToForm }) {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4">
+      {/* Home Button */}
+      <HomeButton onClick={onBackToForm} />
+
+      <div className="max-w-6xl mx-auto px-8 lg:px-12">
         {/* Action Buttons - Top (Hidden in Print) */}
         <div className="no-print mb-6 flex justify-between items-center">
           <button

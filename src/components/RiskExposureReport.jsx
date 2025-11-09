@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getExampleCitations } from '../exampleCitations';
+import HomeButton from './HomeButton.jsx';
 
-const RiskExposureReport = () => {
+const RiskExposureReport = ({ onHome }) => {
   const [reportData, setReportData] = useState(null);
   const [timeframe, setTimeframe] = useState('year');
 
@@ -85,7 +86,10 @@ const RiskExposureReport = () => {
   if (!reportData) return <div className="p-8 text-center">Loading report...</div>;
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
+    <div className="max-w-7xl mx-auto px-8 lg:px-12 py-6">
+      {/* Home Button */}
+      {onHome && <HomeButton onClick={onHome} />}
+
       {/* Header */}
       <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-8 rounded-lg mb-8 shadow-xl">
         <h1 className="text-4xl font-bold mb-2">⚠️ Risk Exposure Report</h1>

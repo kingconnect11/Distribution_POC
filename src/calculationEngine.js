@@ -7,7 +7,14 @@
  * Step 1: Calculate base modifications (reductions, enhancements, or allocations)
  */
 export function calculateBase(baseFine, modificationType, modifications = []) {
-  const enhancedBase = baseFine;
+  // Defensive check: ensure baseFine is a valid number
+  const validBaseFine = parseFloat(baseFine);
+  if (isNaN(validBaseFine) || validBaseFine < 0) {
+    console.error('Invalid baseFine:', baseFine);
+    throw new Error('Base fine must be a valid positive number');
+  }
+
+  const enhancedBase = validBaseFine;
   const portionOf10 = Math.ceil(enhancedBase / 10);
   const lineItems = [];
   let totalModifications = 0;
@@ -46,8 +53,13 @@ export function calculateBase(baseFine, modificationType, modifications = []) {
  * Step 2: Split base between County and City
  */
 export function splitBase(modifiedBase, countyPercent, cityPercent) {
-  const countyBase = modifiedBase * (countyPercent / 100);
-  const cityBase = modifiedBase * (cityPercent / 100);
+  // Defensive checks
+  const validModifiedBase = parseFloat(modifiedBase) || 0;
+  const validCountyPercent = parseFloat(countyPercent) || 0;
+  const validCityPercent = parseFloat(cityPercent) || 0;
+
+  const countyBase = validModifiedBase * (validCountyPercent / 100);
+  const cityBase = validModifiedBase * (validCityPercent / 100);
 
   return [
     {
@@ -70,13 +82,15 @@ export function splitBase(modifiedBase, countyPercent, cityPercent) {
  */
 export function calculatePenalties(portionOf10, penaltyConfig) {
   const lineItems = [];
+  const validPortionOf10 = parseFloat(portionOf10) || 0;
 
   penaltyConfig.forEach(penalty => {
+    const multiplier = parseFloat(penalty.multiplier) || 0;
     lineItems.push({
       code: penalty.code,
       desc: penalty.desc,
       entity: penalty.entity,
-      amount: portionOf10 * penalty.multiplier
+      amount: validPortionOf10 * multiplier
     });
   });
 

@@ -5,6 +5,7 @@ import ExampleCitationSelector from './ExampleCitationSelector.jsx';
 import ResultsReport from './ResultsReport.jsx';
 import CitationUpload from './components/CitationUpload.jsx';
 import RiskExposureReport from './components/RiskExposureReport.jsx';
+import HomeButton from './components/HomeButton.jsx';
 
 function App() {
   // App mode state
@@ -169,34 +170,34 @@ function App() {
       <div className="min-h-screen bg-gray-50">
         {/* Navigation Bar */}
         <div className="bg-white shadow-md mb-6">
-          <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="max-w-7xl mx-auto px-8 lg:px-12 py-4">
             <div className="flex gap-4">
               <button
                 onClick={() => setAppMode('upload')}
-                className="px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200"
+                className="px-8 py-4 rounded-lg font-semibold transition-all flex items-center gap-3 bg-gray-100 text-gray-700 hover:bg-gray-200"
               >
-                <span>📤</span>
-                <span>Upload Citation</span>
+                <span className="text-3xl">📤</span>
+                <span className="text-lg">Upload Citation</span>
               </button>
               <button
                 onClick={() => setAppMode('calculator')}
-                className="px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200"
+                className="px-8 py-4 rounded-lg font-semibold transition-all flex items-center gap-3 bg-gray-100 text-gray-700 hover:bg-gray-200"
               >
-                <span>🧮</span>
-                <span>Manual Entry</span>
+                <span className="text-3xl">🧮</span>
+                <span className="text-lg">Manual Entry</span>
               </button>
               <button
                 onClick={() => setAppMode('report')}
-                className="px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 bg-red-600 text-white shadow-lg"
+                className="px-8 py-4 rounded-lg font-semibold transition-all flex items-center gap-3 bg-red-600 text-white shadow-lg"
               >
-                <span>📊</span>
-                <span>Risk Report</span>
+                <span className="text-3xl">📊</span>
+                <span className="text-lg">Risk Report</span>
               </button>
             </div>
           </div>
         </div>
 
-        <RiskExposureReport />
+        <RiskExposureReport onHome={() => setAppMode('calculator')} />
       </div>
     );
   }
@@ -204,51 +205,56 @@ function App() {
   // Render upload or calculator page
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            California Citation Fine Distribution Calculator
-          </h1>
-          <p className="text-gray-600">
-            Multi-citation type fine distribution calculator for Napa County
-          </p>
+      {/* Home Button */}
+      <HomeButton onClick={() => setAppMode('calculator')} />
+
+      <div className="max-w-7xl mx-auto px-8 lg:px-12">
+        {/* Header with Blue Background Box */}
+        <div className="flex justify-center items-center mb-8">
+          <div className="text-center bg-blue-50 border-2 border-blue-200 rounded-lg p-8 shadow-md max-w-5xl w-full">
+            <h1 className="text-5xl font-bold text-gray-900 mb-3">
+              California Citation Fine Distribution Calculator
+            </h1>
+            <p className="text-gray-600 text-lg">
+              Multi-citation type fine distribution calculator for Napa County
+            </p>
+          </div>
         </div>
 
-        {/* Navigation Bar */}
+        {/* Navigation Bar - 100% Larger Icons */}
         <div className="flex justify-center gap-4 mb-8">
           <button
             onClick={() => setAppMode('upload')}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 ${
+            className={`px-8 py-4 rounded-lg font-semibold transition-all flex items-center gap-3 ${
               appMode === 'upload'
                 ? 'bg-blue-600 text-white shadow-lg'
                 : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200'
             }`}
           >
-            <span>📤</span>
-            <span>Upload Citation</span>
+            <span className="text-3xl">📤</span>
+            <span className="text-lg">Upload Citation</span>
           </button>
           <button
             onClick={() => setAppMode('calculator')}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 ${
+            className={`px-8 py-4 rounded-lg font-semibold transition-all flex items-center gap-3 ${
               appMode === 'calculator'
                 ? 'bg-blue-600 text-white shadow-lg'
                 : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200'
             }`}
           >
-            <span>🧮</span>
-            <span>Manual Entry</span>
+            <span className="text-3xl">🧮</span>
+            <span className="text-lg">Manual Entry</span>
           </button>
           <button
             onClick={() => setAppMode('report')}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 ${
+            className={`px-8 py-4 rounded-lg font-semibold transition-all flex items-center gap-3 ${
               appMode === 'report'
                 ? 'bg-red-600 text-white shadow-lg'
                 : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200'
             }`}
           >
-            <span>📊</span>
-            <span>Risk Report</span>
+            <span className="text-3xl">📊</span>
+            <span className="text-lg">Risk Report</span>
           </button>
         </div>
 
@@ -541,11 +547,11 @@ function App() {
                 </div>
               )}
 
-              {/* Calculate Button */}
+              {/* Calculate Button - Dark Blue and Larger */}
               <div className="mt-8">
                 <button
                   onClick={handleCalculate}
-                  className="w-full px-8 py-5 bg-blue-600 text-white text-2xl font-bold rounded-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl"
+                  className="w-full px-10 py-7 bg-blue-800 text-white text-3xl font-bold rounded-lg hover:bg-blue-900 transition-all shadow-xl hover:shadow-2xl"
                 >
                   Calculate Distribution Report
                 </button>

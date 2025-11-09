@@ -18,10 +18,14 @@
     color: black !important;
   }
 
-  /* Remove backgrounds and shadows for print */
+  /* Remove shadows for print but keep specific backgrounds */
   * {
-    background-color: transparent !important;
     box-shadow: none !important;
+  }
+
+  /* Remove most backgrounds but preserve essential ones */
+  .no-print {
+    display: none !important;
   }
 
   /* Keep borders and structure */
