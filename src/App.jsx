@@ -65,7 +65,14 @@ function App() {
 
     const config = getCitationConfig(citationType);
     const calculationResult = calculateDistribution(inputs, config);
-    setResult(calculationResult);
+
+    // Add actualAmounts from selected example (if available) for variance tracking
+    const resultWithVariance = {
+      ...calculationResult,
+      actualAmounts: selectedExample?.actualAmounts || null
+    };
+
+    setResult(resultWithVariance);
 
     // Navigate to results page
     setCurrentPage('results');

@@ -71,4 +71,56 @@
   .border-blue-600 {
     border-color: #000 !important;
   }
+
+  /* Variance column styling for print */
+  .text-red-600 {
+    color: #dc2626 !important;
+    font-weight: bold;
+  }
+
+  .text-orange-600 {
+    color: #ea580c !important;
+    font-weight: bold;
+  }
+
+  .text-green-600 {
+    color: #16a34a !important;
+  }
+
+  /* Keep error row highlighting in print */
+  .bg-red-50 {
+    background-color: #fef2f2 !important;
+  }
+
+  .bg-orange-50 {
+    background-color: #fff7ed !important;
+  }
+
+  /* Variance alert box for print */
+  .bg-red-50.border-red-400 {
+    background-color: #fef2f2 !important;
+    border: 2px solid #f87171 !important;
+  }
+
+  .bg-orange-50.border-orange-400 {
+    background-color: #fff7ed !important;
+    border: 2px solid #fb923c !important;
+  }
+
+  /* Preserve variance colors in summary totals */
+  .text-red-300,
+  .text-green-300 {
+    color: #000 !important;
+    font-weight: bold;
+  }
+
+  /* Keep blue background for grand total section */
+  .bg-blue-600 {
+    background-color: #2563eb !important;
+    color: white !important;
+  }
+
+  .text-blue-100 {
+    color: #dbeafe !important;
+  }
 }

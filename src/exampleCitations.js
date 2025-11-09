@@ -23,6 +23,33 @@ export const EXAMPLE_CITATIONS = {
       violationType: 'Misdemeanor',
       hasLabPenalty: false,
       labPenaltyAmount: 0
+    },
+    // Dummy "actual amounts" for variance demo
+    // Scenario: Court made several small errors - Total actual: $2,349 (should be $2,429)
+    // Variance: -$80 (County lost $80)
+    actualAmounts: {
+      'PC 1463.14(a)': 50.00,   // Correct
+      'PC 1463.16': 50.00,       // Correct
+      'PC 1463.18': 20.00,       // Correct
+      'PC 1463.001': 380.00,     // Correct
+      'PC 1463.002': 0.00,       // Correct
+      'PC 1464': 350.00,         // ERROR: Court entered wrong (should match State PA 70%)
+      'GC 76104.6': 50.00,       // Correct
+      'GC 76104.7': 200.00,      // Correct
+      'GC 76100': 200.00,        // Correct
+      'GC 76101': 50.00,         // Correct
+      'GC 76104': 100.00,        // Correct
+      'GC 76104.5': 0.00,        // Correct
+      'GC 76102': 0.00,          // Correct
+      'GC 76000.5': 100.00,      // Correct
+      'GC 76000.10(c)': 4.00,    // Correct
+      'GC 70372(a)': 250.00,     // Correct (combined ICNA + SCFCF)
+      'PC 1465.7': 100.00,       // Correct
+      'PC 1465.8': 80.00,        // Correct
+      'GC 70373': 60.00,         // Correct
+      'PC 1463.25': 0.00,        // ERROR: Missing (should be 50)
+      'VC 23649(a)': 5.00,       // ERROR: Wrong amount (should be 35)
+      'PC 1202.4(b)': 150.00     // Correct
     }
   },
 
@@ -45,6 +72,33 @@ export const EXAMPLE_CITATIONS = {
       violationType: 'Misdemeanor',
       hasLabPenalty: false,
       labPenaltyAmount: 0
+    },
+    // Dummy "actual amounts" for variance demo
+    // Scenario: Court forgot multiple penalty assessments - Total actual: $1,713 (should be $1,908)
+    // Variance: -$195 (County lost $195)
+    actualAmounts: {
+      'PC 1463.14(a)': 50.00,    // Correct
+      'PC 1463.16': 50.00,        // Correct
+      'PC 1463.18': 20.00,        // Correct
+      'PC 1463.001': 270.00,      // Correct
+      'PC 1463.002': 0.00,        // Correct
+      'PC 1464': 273.00,          // Correct (State PA 70%)
+      'GC 76104.6': 39.00,        // Correct
+      'GC 76104.7': 156.00,       // Correct
+      'GC 76100': 0.00,           // ERROR: Missing (should be 156)
+      'GC 76101': 0.00,           // ERROR: Missing (should be 39)
+      'GC 76104': 78.00,          // Correct
+      'GC 76104.5': 0.00,         // Correct
+      'GC 76102': 0.00,           // Correct
+      'GC 76000.5': 78.00,        // Correct
+      'GC 76000.10(c)': 4.00,     // Correct
+      'GC 70372(a)': 195.00,      // Correct (combined)
+      'PC 1465.7': 78.00,         // Correct
+      'PC 1465.8': 30.00,         // ERROR: Wrong (should be 80)
+      'GC 70373': 60.00,          // Correct
+      'PC 1463.25': 50.00,        // Correct
+      'VC 23649(a)': 35.00,       // Correct
+      'PC 1202.4(b)': 150.00      // Correct
     }
   },
 
@@ -67,6 +121,27 @@ export const EXAMPLE_CITATIONS = {
       violationType: 'Infraction',
       hasLabPenalty: false,
       labPenaltyAmount: 0
+    },
+    // Dummy "actual amounts" for variance demo
+    // Scenario: Mix of over/under - Total actual: $1,994 (should be $2,194)
+    // Variance: -$200 (County lost $200)
+    actualAmounts: {
+      'PC 1463.001': 500.00,      // Correct
+      'PC 1463.002': 0.00,        // Correct
+      'PC 1464': 500.00,          // ERROR: Over (combined wrong, should be 350+150=500, but actual is off)
+      'GC 76104.6': 50.00,        // Correct
+      'GC 76104.7': 200.00,       // Correct
+      'GC 76100': 200.00,         // Correct
+      'GC 76101': 50.00,          // Correct
+      'GC 76104': 100.00,         // Correct
+      'GC 76104.5': 0.00,         // Correct
+      'GC 76102': 0.00,           // Correct
+      'GC 76000.5': 100.00,       // Correct
+      'GC 76000.10(c)': 4.00,     // Correct
+      'GC 70372(a)': 0.00,        // ERROR: Missing (should be 250 combined)
+      'PC 1465.7': 100.00,        // Correct
+      'PC 1465.8': 80.00,         // Correct
+      'GC 70373': 110.00          // ERROR: Over (should be 60)
     }
   }
 };
