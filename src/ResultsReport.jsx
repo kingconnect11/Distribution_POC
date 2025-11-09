@@ -105,24 +105,126 @@ function ResultsReport({ result, formData, onBackToForm }) {
             </p>
           </div>
 
-          {/* Variance Alert Box (only if there's variance data and errors) */}
-          {hasVarianceData && varianceTotals && varianceTotals.variance.grandTotal !== 0 && (
-            <div className={`p-4 rounded-lg mb-6 border-2 ${
-              varianceTotals.variance.grandTotal < 0
-                ? 'bg-red-50 border-red-400'
-                : 'bg-orange-50 border-orange-400'
-            }`}>
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">⚠️</span>
-                <div>
-                  <div className="font-bold text-lg text-gray-900">Distribution Error Detected</div>
-                  <div className="text-sm text-gray-700">
-                    This citation has a <span className="font-bold">{formatCurrency(Math.abs(varianceTotals.variance.grandTotal))}</span> variance.
-                    {varianceTotals.variance.grandTotal < 0 && ' County lost revenue due to under-distribution.'}
-                    {varianceTotals.variance.grandTotal > 0 && ' Citation was over-distributed.'}
+          {/* Variance Summary Dashboard (only if there's variance data) */}
+          {hasVarianceData && varianceTotals && (
+            <div className="mb-6">
+              {/* Alert Box for Errors */}
+              {varianceTotals.variance.grandTotal !== 0 && (
+                <div className={`p-4 rounded-lg mb-4 border-2 ${
+                  varianceTotals.variance.grandTotal < 0
+                    ? 'bg-red-50 border-red-400'
+                    : 'bg-orange-50 border-orange-400'
+                }`}>
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">⚠️</span>
+                    <div>
+                      <div className="font-bold text-lg text-gray-900">Distribution Error Detected</div>
+                      <div className="text-sm text-gray-700">
+                        This citation has a <span className="font-bold">{formatCurrency(Math.abs(varianceTotals.variance.grandTotal))}</span> variance.
+                        {varianceTotals.variance.grandTotal < 0 && ' County lost revenue due to under-distribution.'}
+                        {varianceTotals.variance.grandTotal > 0 && ' Citation was over-distributed.'}
+                      </div>
+                    </div>
                   </div>
                 </div>
+              )}
+
+              {/* Variance Dashboard Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                {/* County Variance Card */}
+                {result.totals.county > 0 && (
+                  <div className={`rounded-lg p-4 border-2 ${
+                    varianceTotals.variance.county < 0
+                      ? 'bg-red-50 border-red-300'
+                      : varianceTotals.variance.county > 0
+                      ? 'bg-orange-50 border-orange-300'
+                      : 'bg-green-50 border-green-300'
+                  }`}>
+                    <div className="text-sm font-medium text-gray-600 mb-1">County Variance</div>
+                    <div className={`text-2xl font-bold ${
+                      varianceTotals.variance.county < 0
+                        ? 'text-red-700'
+                        : varianceTotals.variance.county > 0
+                        ? 'text-orange-700'
+                        : 'text-green-700'
+                    }`}>
+                      {varianceTotals.variance.county === 0 ? '✅ Perfect' : formatCurrency(varianceTotals.variance.county)}
+                    </div>
+                    <div className="text-xs text-gray-600 mt-1">
+                      {varianceTotals.variance.county < 0 && 'Revenue Lost'}
+                      {varianceTotals.variance.county > 0 && 'Over-distributed'}
+                      {varianceTotals.variance.county === 0 && 'No Errors'}
+                    </div>
+                  </div>
+                )}
+
+                {/* City Variance Card */}
+                {result.totals.city > 0 && (
+                  <div className={`rounded-lg p-4 border-2 ${
+                    varianceTotals.variance.city < 0
+                      ? 'bg-red-50 border-red-300'
+                      : varianceTotals.variance.city > 0
+                      ? 'bg-orange-50 border-orange-300'
+                      : 'bg-green-50 border-green-300'
+                  }`}>
+                    <div className="text-sm font-medium text-gray-600 mb-1">City Variance</div>
+                    <div className={`text-2xl font-bold ${
+                      varianceTotals.variance.city < 0
+                        ? 'text-red-700'
+                        : varianceTotals.variance.city > 0
+                        ? 'text-orange-700'
+                        : 'text-green-700'
+                    }`}>
+                      {varianceTotals.variance.city === 0 ? '✅ Perfect' : formatCurrency(varianceTotals.variance.city)}
+                    </div>
+                    <div className="text-xs text-gray-600 mt-1">
+                      {varianceTotals.variance.city < 0 && 'Revenue Lost'}
+                      {varianceTotals.variance.city > 0 && 'Over-distributed'}
+                      {varianceTotals.variance.city === 0 && 'No Errors'}
+                    </div>
+                  </div>
+                )}
+
+                {/* State Variance Card */}
+                {result.totals.state > 0 && (
+                  <div className={`rounded-lg p-4 border-2 ${
+                    varianceTotals.variance.state < 0
+                      ? 'bg-red-50 border-red-300'
+                      : varianceTotals.variance.state > 0
+                      ? 'bg-orange-50 border-orange-300'
+                      : 'bg-green-50 border-green-300'
+                  }`}>
+                    <div className="text-sm font-medium text-gray-600 mb-1">State Variance</div>
+                    <div className={`text-2xl font-bold ${
+                      varianceTotals.variance.state < 0
+                        ? 'text-red-700'
+                        : varianceTotals.variance.state > 0
+                        ? 'text-orange-700'
+                        : 'text-green-700'
+                    }`}>
+                      {varianceTotals.variance.state === 0 ? '✅ Perfect' : formatCurrency(varianceTotals.variance.state)}
+                    </div>
+                    <div className="text-xs text-gray-600 mt-1">
+                      {varianceTotals.variance.state < 0 && 'Revenue Lost'}
+                      {varianceTotals.variance.state > 0 && 'Over-distributed'}
+                      {varianceTotals.variance.state === 0 && 'No Errors'}
+                    </div>
+                  </div>
+                )}
               </div>
+
+              {/* Error Count Summary */}
+              {varianceTotals.variance.grandTotal !== 0 && (
+                <div className="bg-gray-100 rounded-lg p-3 text-center">
+                  <span className="text-sm font-medium text-gray-700">
+                    {result.lineItems.filter(item => {
+                      const calc = parseFloat(item.amount);
+                      const actual = result.actualAmounts[item.code] ?? calc;
+                      return actual !== calc;
+                    }).length} error(s) found in distribution
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
@@ -247,16 +349,21 @@ function ResultsReport({ result, formData, onBackToForm }) {
                             <td className="px-4 py-3 whitespace-nowrap text-sm text-right font-mono font-semibold text-gray-900">
                               {formatCurrency(actualAmount)}
                             </td>
-                            <td className={`px-4 py-3 whitespace-nowrap text-sm text-right font-bold ${
+                            <td className={`px-4 py-3 text-sm text-right font-bold ${
                               variance < 0 ? 'text-red-600' : variance > 0 ? 'text-orange-600' : 'text-green-600'
                             }`}>
                               {variance === 0 ? (
-                                <span className="text-green-600">✅</span>
+                                <span className="text-green-600 text-lg">✅</span>
                               ) : (
-                                <span>
-                                  {variance > 0 ? '+' : ''}{formatCurrency(variance)}
-                                  {variance < 0 ? ' ❌' : ' ⚠️'}
-                                </span>
+                                <div className="flex flex-col items-end">
+                                  <span className="whitespace-nowrap">
+                                    {variance > 0 ? '+' : ''}{formatCurrency(variance)}
+                                    {variance < 0 ? ' ❌' : ' ⚠️'}
+                                  </span>
+                                  <span className="text-xs font-normal text-gray-600 mt-1">
+                                    {variance < 0 ? 'Under by ' + formatCurrency(Math.abs(variance)) : 'Over by ' + formatCurrency(variance)}
+                                  </span>
+                                </div>
                               )}
                             </td>
                           </>
@@ -407,6 +514,82 @@ function ResultsReport({ result, formData, onBackToForm }) {
               </div>
             )}
           </div>
+
+          {/* Revenue Recovery Projection (only show if variance detected) */}
+          {hasVarianceData && varianceTotals && varianceTotals.variance.grandTotal !== 0 && (
+            <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center flex items-center justify-center gap-2">
+                <span>💰</span>
+                <span>Annual Revenue Impact Projection</span>
+              </h2>
+
+              <div className="bg-white rounded-lg p-4 mb-4">
+                <div className="text-sm text-gray-600 mb-3 text-center">
+                  Based on this citation's error rate, here's the potential annual revenue impact:
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Conservative Estimate */}
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                    <div className="text-xs font-semibold text-blue-700 uppercase mb-2">Conservative</div>
+                    <div className="text-sm text-gray-600 mb-1">5,000 citations/year</div>
+                    <div className="text-2xl font-bold text-blue-900">
+                      {formatCurrency(Math.abs(varianceTotals.variance.grandTotal) * 5000)}
+                    </div>
+                    <div className="text-xs text-gray-600 mt-1">potential annual impact</div>
+                  </div>
+
+                  {/* Moderate Estimate */}
+                  <div className="bg-indigo-50 rounded-lg p-4 border-2 border-indigo-400">
+                    <div className="text-xs font-semibold text-indigo-700 uppercase mb-2">Moderate</div>
+                    <div className="text-sm text-gray-600 mb-1">10,000 citations/year</div>
+                    <div className="text-2xl font-bold text-indigo-900">
+                      {formatCurrency(Math.abs(varianceTotals.variance.grandTotal) * 10000)}
+                    </div>
+                    <div className="text-xs text-gray-600 mt-1">potential annual impact</div>
+                  </div>
+
+                  {/* High Volume Estimate */}
+                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                    <div className="text-xs font-semibold text-purple-700 uppercase mb-2">High Volume</div>
+                    <div className="text-sm text-gray-600 mb-1">15,000 citations/year</div>
+                    <div className="text-2xl font-bold text-purple-900">
+                      {formatCurrency(Math.abs(varianceTotals.variance.grandTotal) * 15000)}
+                    </div>
+                    <div className="text-xs text-gray-600 mt-1">potential annual impact</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                <div className="flex items-start gap-2">
+                  <span className="text-xl">📊</span>
+                  <div>
+                    <div className="font-bold text-gray-900 mb-1">Business Impact</div>
+                    <div className="text-sm text-gray-700">
+                      {varianceTotals.variance.grandTotal < 0 ? (
+                        <>
+                          At {formatCurrency(Math.abs(varianceTotals.variance.grandTotal))} per citation, systematic distribution errors
+                          could cost the county <span className="font-bold text-red-700">hundreds of thousands to millions</span> in lost revenue annually.
+                          <div className="mt-2 font-semibold">
+                            Automated variance detection ensures statutory compliance and recovers lost revenue.
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          Over-distribution of {formatCurrency(varianceTotals.variance.grandTotal)} per citation
+                          represents <span className="font-bold text-orange-700">improper fund allocation</span> that should be corrected.
+                          <div className="mt-2 font-semibold">
+                            Automated validation prevents over-payment and ensures accurate distribution.
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Footer */}
           <div className="mt-8 pt-6 border-t-2 border-gray-200 text-center text-sm text-gray-600">

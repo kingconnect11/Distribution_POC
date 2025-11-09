@@ -123,4 +123,50 @@
   .text-blue-100 {
     color: #dbeafe !important;
   }
+
+  /* Variance Dashboard Cards */
+  .bg-red-50.border-red-300,
+  .bg-orange-50.border-orange-300,
+  .bg-green-50.border-green-300 {
+    border: 2px solid #000 !important;
+    padding: 8px !important;
+  }
+
+  .text-red-700,
+  .text-orange-700,
+  .text-green-700 {
+    color: #000 !important;
+    font-weight: bold !important;
+  }
+
+  /* Revenue Projection Section */
+  .bg-gradient-to-r {
+    background: #f0f9ff !important;
+    border: 2px solid #3b82f6 !important;
+  }
+
+  .bg-blue-50,
+  .bg-indigo-50,
+  .bg-purple-50 {
+    background-color: #f8fafc !important;
+    border: 1px solid #000 !important;
+  }
+
+  .bg-yellow-50 {
+    background-color: #fffbeb !important;
+  }
+
+  .border-yellow-400 {
+    border-color: #f59e0b !important;
+  }
+
+  .text-blue-900,
+  .text-indigo-900,
+  .text-purple-900 {
+    color: #000 !important;
+  }
+
+  /* Hide projection section in print (optional - remove this if you want it printed) */
+  /* Uncomment the line below to hide projection in print */
+  /* .bg-gradient-to-r { display: none !important; } */
 }
