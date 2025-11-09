@@ -1,3 +1,74 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Print-optimized styles */
+@media print {
+  /* Hide non-print elements */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Optimize for printing */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Remove backgrounds and shadows for print */
+  * {
+    background-color: transparent !important;
+    box-shadow: none !important;
+  }
+
+  /* Keep borders and structure */
+  table, th, td {
+    border: 1px solid #000 !important;
+  }
+
+  /* Ensure proper page breaks */
+  .print-page-break {
+    page-break-after: always;
+  }
+
+  /* Avoid breaking inside tables */
+  table {
+    page-break-inside: avoid;
+  }
+
+  tr {
+    page-break-inside: avoid;
+  }
+
+  /* Keep text readable */
+  h1, h2, h3, h4, h5, h6 {
+    color: black !important;
+    page-break-after: avoid;
+  }
+
+  /* Ensure proper margins */
+  @page {
+    margin: 0.75in;
+  }
+
+  /* Keep entity badges visible with borders */
+  .bg-blue-100 {
+    border: 1px solid #3b82f6 !important;
+    color: #1e40af !important;
+  }
+
+  .bg-green-100 {
+    border: 1px solid #10b981 !important;
+    color: #065f46 !important;
+  }
+
+  .bg-purple-100 {
+    border: 1px solid #8b5cf6 !important;
+    color: #5b21b6 !important;
+  }
+
+  /* Make important sections stand out */
+  .border-blue-600 {
+    border-color: #000 !important;
+  }
+}

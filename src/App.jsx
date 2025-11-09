@@ -1,8 +1,14 @@
 import { useState } from 'react';
 import { calculateDistribution } from './calculationEngine.js';
 import { getCitationConfig, getAvailableCitationTypes } from './citationConfigs.js';
+import ExampleCitationSelector from './ExampleCitationSelector.jsx';
+import ResultsReport from './ResultsReport.jsx';
 
 function App() {
+  // Page state
+  const [currentPage, setCurrentPage] = useState('form'); // 'form' or 'results'
+  const [selectedExample, setSelectedExample] = useState(null);
+
   // Form state
   const [citationType, setCitationType] = useState('DUI');
   const [caseNumber, setCaseNumber] = useState('');
@@ -22,6 +28,32 @@ function App() {
   const cityPercent = 100 - countyPercent;
   const availableCitationTypes = getAvailableCitationTypes();
 
+  // Handle example citation selection
+  const handleSelectExample = (example) => {
+    setSelectedExample(example);
+    const data = example.data;
+
+    // Populate all form fields
+    setCitationType(data.citationType);
+    setCaseNumber(data.caseNumber);
+    setBaseFine(data.baseFine);
+    setArrestingAgency(data.arrestingAgency);
+    setSubAgency(data.subAgency);
+    setAgencyLocal(data.agencyLocal);
+    setCountyPercent(data.countyPercent);
+    setGc76000(data.gc76000);
+    setViolationDate(data.violationDate);
+    setDispDate(data.dispDate);
+    setViolationType(data.violationType);
+    setHasLabPenalty(data.hasLabPenalty);
+    setLabPenaltyAmount(data.labPenaltyAmount);
+
+    // Smooth scroll to form
+    setTimeout(() => {
+      window.scrollTo({ top: 300, behavior: 'smooth' });
+    }, 100);
+  };
+
   const handleCalculate = () => {
     const inputs = {
       baseFine: parseFloat(baseFine),
@@ -34,20 +66,42 @@ function App() {
     const config = getCitationConfig(citationType);
     const calculationResult = calculateDistribution(inputs, config);
     setResult(calculationResult);
+
+    // Navigate to results page
+    setCurrentPage('results');
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleBackToForm = () => {
+    setCurrentPage('form');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const formatCurrency = (amount) => {
     return `$${amount.toFixed(2)}`;
   };
 
-  const getEntityColorClass = (entity) => {
-    const entityUpper = entity.toUpperCase();
-    if (entityUpper === 'COUNTY') return 'bg-blue-100 text-blue-800';
-    if (entityUpper === 'CITY') return 'bg-green-100 text-green-800';
-    if (entityUpper === 'STATE') return 'bg-purple-100 text-purple-800';
-    return 'bg-gray-100 text-gray-800';
-  };
+  // If on results page, show ResultsReport component
+  if (currentPage === 'results' && result) {
+    return (
+      <ResultsReport
+        result={result}
+        formData={{
+          citationType,
+          caseNumber,
+          baseFine,
+          arrestingAgency,
+          violationType,
+          violationDate
+        }}
+        onBackToForm={handleBackToForm}
+      />
+    );
+  }
 
+  // Otherwise show the form page
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
@@ -60,6 +114,12 @@ function App() {
             Multi-citation type fine distribution calculator for Napa County
           </p>
         </div>
+
+        {/* Example Citation Selector */}
+        <ExampleCitationSelector
+          onSelectExample={handleSelectExample}
+          selectedExample={selectedExample}
+        />
 
         {/* Input Form */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -296,121 +356,19 @@ function App() {
             </div>
           )}
 
-          {/* Calculate Button */}
-          <div className="mt-6">
+          {/* Enhanced Calculate Button */}
+          <div className="mt-8">
             <button
               onClick={handleCalculate}
-              className="w-full md:w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors shadow-md"
+              className="w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xl font-bold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl transform hover:scale-[1.02] flex items-center justify-center"
             >
-              Calculate Distribution
+              <svg className="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              Calculate Distribution Report
             </button>
           </div>
         </div>
-
-        {/* Results */}
-        {result && (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900">
-                Distribution Results
-              </h2>
-            </div>
-
-            {/* Calculated Values Summary */}
-            <div className="bg-gray-50 rounded p-4 mb-6">
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <div>
-                  <span className="font-medium text-gray-700">Enhanced Base:</span>
-                  <span className="ml-2 text-gray-900">{formatCurrency(result.calculated.enhancedBase)}</span>
-                </div>
-                <div>
-                  <span className="font-medium text-gray-700">Portion of 10:</span>
-                  <span className="ml-2 text-gray-900">{result.calculated.portionOf10}</span>
-                </div>
-                <div>
-                  <span className="font-medium text-gray-700">Reduced Base:</span>
-                  <span className="ml-2 text-gray-900">{formatCurrency(result.calculated.reducedBase)}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Distribution Table */}
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-300">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                      Distribution
-                    </th>
-                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                      Entity
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                      Amount
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {result.lineItems.map((item, index) => (
-                    <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        <div className="font-medium">{item.code}</div>
-                        <div className="text-gray-600 text-xs">{item.desc}</div>
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-center">
-                        <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getEntityColorClass(item.entity)}`}>
-                          {item.entity}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-right font-mono text-gray-900">
-                        {formatCurrency(item.amount)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Summary Totals */}
-            <div className="mt-6 border-t border-gray-300 pt-6">
-              <div className="bg-gray-50 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Summary Totals</h3>
-                <div className="space-y-3">
-                  {result.totals.county > 0 && (
-                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
-                      <span className="font-medium text-gray-700">County Total:</span>
-                      <span className="text-xl font-mono font-semibold text-blue-700">
-                        {formatCurrency(result.totals.county)}
-                      </span>
-                    </div>
-                  )}
-                  {result.totals.city > 0 && (
-                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
-                      <span className="font-medium text-gray-700">City Total:</span>
-                      <span className="text-xl font-mono font-semibold text-green-700">
-                        {formatCurrency(result.totals.city)}
-                      </span>
-                    </div>
-                  )}
-                  {result.totals.state > 0 && (
-                    <div className="flex justify-between items-center pb-2 border-b border-gray-200">
-                      <span className="font-medium text-gray-700">State Total:</span>
-                      <span className="text-xl font-mono font-semibold text-purple-700">
-                        {formatCurrency(result.totals.state)}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex justify-between items-center pt-3">
-                    <span className="text-xl font-bold text-gray-900">GRAND TOTAL:</span>
-                    <span className="text-2xl font-mono font-bold text-gray-900">
-                      {formatCurrency(result.totals.grandTotal)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
