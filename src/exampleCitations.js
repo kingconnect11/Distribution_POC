@@ -143,6 +143,53 @@ export const EXAMPLE_CITATIONS = {
       'PC 1465.8': 80.00,         // Correct
       'GC 70373': 110.00          // ERROR: Over (should be 60)
     }
+  },
+
+  dv_mills: {
+    id: 'dv_mills',
+    name: 'Domestic Violence ($400)',
+    description: 'Domestic Violence citation (Napa County CR164294 Mills)',
+    expectedTotal: 2844.00,
+    data: {
+      citationType: 'Domestic Violence',
+      caseNumber: 'CR164294 Mills',
+      baseFine: 400,
+      arrestingAgency: 'PD',
+      subAgency: 'Napa Police',
+      agencyLocal: 'City',
+      countyPercent: 100,
+      gc76000: 0,
+      violationDate: '2012-11-30',
+      dispDate: '2013-01-15',
+      violationType: 'Felony',
+      hasLabPenalty: false,
+      labPenaltyAmount: 0,
+      probationSupervision: 435
+    },
+    // Dummy "actual amounts" for variance demo
+    // Scenario: Missing DV fee - Total actual: $2,444 (should be $2,844)
+    // Variance: -$400 (County lost $400)
+    actualAmounts: {
+      'PC 1463.001': 400.00,     // Correct
+      'PC 1463.002': 0.00,       // Correct
+      'PC 1464': 280.00,         // Correct (State PA 70%)
+      'GC 76104.6': 40.00,       // Correct
+      'GC 76104.7': 160.00,      // Correct
+      'GC 76100': 160.00,        // Correct
+      'GC 76101': 40.00,         // Correct
+      'GC 76104': 80.00,         // Correct
+      'GC 76104.5': 0.00,        // Correct
+      'GC 76102': 0.00,          // Correct
+      'GC 76000.5': 80.00,       // Correct
+      'GC 76000.10(c)': 4.00,    // Correct
+      'GC 70372(a)': 200.00,     // Correct (combined ICNA + SCFCF)
+      'PC 1465.7': 80.00,        // Correct
+      'PC 1465.8': 80.00,        // Correct
+      'GC 70373': 60.00,         // Correct
+      'PC 1203.097': 0.00,       // ERROR: Missing DV Fee (should be 400)
+      'PC 1202.4(b)': 300.00,    // Correct
+      'PC 1203.1b': 435.00       // Correct
+    }
   }
 };
 

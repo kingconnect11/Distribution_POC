@@ -3,10 +3,12 @@ import { calculateDistribution } from './calculationEngine.js';
 import { getCitationConfig, getAvailableCitationTypes } from './citationConfigs.js';
 import ExampleCitationSelector from './ExampleCitationSelector.jsx';
 import ResultsReport from './ResultsReport.jsx';
+import CitationUpload from './components/CitationUpload.jsx';
+import RiskExposureReport from './components/RiskExposureReport.jsx';
 
 function App() {
-  // Page state
-  const [currentPage, setCurrentPage] = useState('form'); // 'form' or 'results'
+  // App mode state
+  const [appMode, setAppMode] = useState('calculator'); // 'upload', 'calculator', 'report', 'results'
   const [selectedExample, setSelectedExample] = useState(null);
 
   // Form state
@@ -23,10 +25,57 @@ function App() {
   const [violationType, setViolationType] = useState('Misdemeanor');
   const [hasLabPenalty, setHasLabPenalty] = useState(false);
   const [labPenaltyAmount, setLabPenaltyAmount] = useState(0);
+
+  // DV-specific state
+  const [probationSupervision, setProbationSupervision] = useState(0);
+
   const [result, setResult] = useState(null);
 
   const cityPercent = 100 - countyPercent;
   const availableCitationTypes = getAvailableCitationTypes();
+
+  // Handle citation upload and auto-populate
+  const handleCitationExtracted = (extractedData) => {
+    // Populate all form fields from extracted data
+    if (extractedData.citationType) setCitationType(extractedData.citationType);
+    if (extractedData.caseNumber) setCaseNumber(extractedData.caseNumber);
+    if (extractedData.baseFine) setBaseFine(extractedData.baseFine);
+    if (extractedData.arrestingAgency) setArrestingAgency(extractedData.arrestingAgency);
+    if (extractedData.subAgency !== undefined) setSubAgency(extractedData.subAgency);
+    if (extractedData.agencyLocal) setAgencyLocal(extractedData.agencyLocal);
+    if (extractedData.countyPercent !== undefined) setCountyPercent(extractedData.countyPercent);
+    if (extractedData.gc76000 !== undefined) setGc76000(extractedData.gc76000);
+    if (extractedData.violationDate) setViolationDate(extractedData.violationDate);
+    if (extractedData.dispDate !== undefined) setDispDate(extractedData.dispDate);
+    if (extractedData.violationType) setViolationType(extractedData.violationType);
+    if (extractedData.hasLabPenalty !== undefined) setHasLabPenalty(extractedData.hasLabPenalty);
+    if (extractedData.labPenaltyAmount !== undefined) setLabPenaltyAmount(extractedData.labPenaltyAmount);
+    if (extractedData.probationSupervision !== undefined) setProbationSupervision(extractedData.probationSupervision);
+
+    // Switch to calculator mode
+    setAppMode('calculator');
+
+    // Animate field population with sequential glow effect
+    const fieldIds = [
+      'caseNumber', 'baseFine', 'arrestingAgency', 'agencyLocal',
+      'countyPercent', 'violationDate', 'violationType'
+    ];
+
+    fieldIds.forEach((fieldId, index) => {
+      setTimeout(() => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+          field.classList.add('highlight-populated');
+          setTimeout(() => field.classList.remove('highlight-populated'), 1000);
+        }
+      }, index * 150);
+    });
+
+    // Scroll to form
+    setTimeout(() => {
+      window.scrollTo({ top: 200, behavior: 'smooth' });
+    }, 100);
+  };
 
   // Handle example citation selection
   const handleSelectExample = (example) => {
@@ -48,6 +97,11 @@ function App() {
     setHasLabPenalty(data.hasLabPenalty);
     setLabPenaltyAmount(data.labPenaltyAmount);
 
+    // DV-specific fields
+    if (data.probationSupervision !== undefined) {
+      setProbationSupervision(data.probationSupervision);
+    }
+
     // Smooth scroll to form
     setTimeout(() => {
       window.scrollTo({ top: 300, behavior: 'smooth' });
@@ -60,7 +114,8 @@ function App() {
       countyPercent: parseFloat(countyPercent),
       cityPercent,
       hasLabPenalty,
-      labPenaltyAmount: parseFloat(labPenaltyAmount) || 0
+      labPenaltyAmount: parseFloat(labPenaltyAmount) || 0,
+      probationSupervision: parseFloat(probationSupervision) || 0
     };
 
     const config = getCitationConfig(citationType);
@@ -75,14 +130,14 @@ function App() {
     setResult(resultWithVariance);
 
     // Navigate to results page
-    setCurrentPage('results');
+    setAppMode('results');
 
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleBackToForm = () => {
-    setCurrentPage('form');
+    setAppMode('calculator');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -90,8 +145,8 @@ function App() {
     return `$${amount.toFixed(2)}`;
   };
 
-  // If on results page, show ResultsReport component
-  if (currentPage === 'results' && result) {
+  // Render results page
+  if (appMode === 'results' && result) {
     return (
       <ResultsReport
         result={result}
@@ -108,7 +163,45 @@ function App() {
     );
   }
 
-  // Otherwise show the form page
+  // Render risk report page
+  if (appMode === 'report') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Navigation Bar */}
+        <div className="bg-white shadow-md mb-6">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="flex gap-4">
+              <button
+                onClick={() => setAppMode('upload')}
+                className="px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200"
+              >
+                <span>📤</span>
+                <span>Upload Citation</span>
+              </button>
+              <button
+                onClick={() => setAppMode('calculator')}
+                className="px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200"
+              >
+                <span>🧮</span>
+                <span>Manual Entry</span>
+              </button>
+              <button
+                onClick={() => setAppMode('report')}
+                className="px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 bg-red-600 text-white shadow-lg"
+              >
+                <span>📊</span>
+                <span>Risk Report</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <RiskExposureReport />
+      </div>
+    );
+  }
+
+  // Render upload or calculator page
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
@@ -122,257 +215,344 @@ function App() {
           </p>
         </div>
 
-        {/* Example Citation Selector */}
-        <ExampleCitationSelector
-          onSelectExample={handleSelectExample}
-          selectedExample={selectedExample}
-        />
+        {/* Navigation Bar */}
+        <div className="flex justify-center gap-4 mb-8">
+          <button
+            onClick={() => setAppMode('upload')}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 ${
+              appMode === 'upload'
+                ? 'bg-blue-600 text-white shadow-lg'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200'
+            }`}
+          >
+            <span>📤</span>
+            <span>Upload Citation</span>
+          </button>
+          <button
+            onClick={() => setAppMode('calculator')}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 ${
+              appMode === 'calculator'
+                ? 'bg-blue-600 text-white shadow-lg'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200'
+            }`}
+          >
+            <span>🧮</span>
+            <span>Manual Entry</span>
+          </button>
+          <button
+            onClick={() => setAppMode('report')}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 ${
+              appMode === 'report'
+                ? 'bg-red-600 text-white shadow-lg'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200'
+            }`}
+          >
+            <span>📊</span>
+            <span>Risk Report</span>
+          </button>
+        </div>
 
-        {/* Input Form */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-            Case Information
-          </h2>
-
-          {/* Citation Type Selector */}
-          <div className="mb-6 pb-6 border-b border-gray-200">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Citation Type
-            </label>
-            <select
-              value={citationType}
-              onChange={(e) => setCitationType(e.target.value)}
-              className="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              {availableCitationTypes.map(type => (
-                <option key={type.value} value={type.value}>
-                  {type.label}
-                </option>
-              ))}
-            </select>
+        {/* Upload Mode */}
+        {appMode === 'upload' && (
+          <div className="mb-8">
+            <CitationUpload
+              onDataExtracted={handleCitationExtracted}
+              currentCitationType={citationType}
+            />
           </div>
+        )}
 
-          {/* Case Identification Row */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Case Number
-              </label>
-              <input
-                type="text"
-                value={caseNumber}
-                onChange={(e) => setCaseNumber(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="CR 123456"
-              />
-            </div>
+        {/* Calculator Mode */}
+        {appMode === 'calculator' && (
+          <>
+            {/* Example Citation Selector */}
+            <ExampleCitationSelector
+              onSelectExample={handleSelectExample}
+              selectedExample={selectedExample}
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Base Fine ($)
-              </label>
-              <input
-                type="number"
-                value={baseFine}
-                onChange={(e) => setBaseFine(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                min="0"
-                step="1"
-              />
-            </div>
+            {/* Input Form */}
+            <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+                Case Information
+              </h2>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Total Base (Calculated)
-              </label>
-              <input
-                type="text"
-                value={result ? formatCurrency(result.calculated.enhancedBase) : '$0.00'}
-                readOnly
-                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600"
-              />
-            </div>
-          </div>
-
-          {/* Agency Information Row */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Arresting Agency
-              </label>
-              <select
-                value={arrestingAgency}
-                onChange={(e) => setArrestingAgency(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="PD">PD</option>
-                <option value="Sheriff">Sheriff</option>
-                <option value="CHP">CHP</option>
-                <option value="Fish & Game">Fish & Game</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Sub Agency
-              </label>
-              <input
-                type="text"
-                value={subAgency}
-                onChange={(e) => setSubAgency(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Optional"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Agency Local
-              </label>
-              <select
-                value={agencyLocal}
-                onChange={(e) => setAgencyLocal(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="City">City</option>
-                <option value="County">County</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Distribution Percentages Row */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                County % (City auto-calculated)
-              </label>
-              <input
-                type="number"
-                value={countyPercent}
-                onChange={(e) => {
-                  const value = Math.min(100, Math.max(0, parseFloat(e.target.value) || 0));
-                  setCountyPercent(value);
-                }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                min="0"
-                max="100"
-                step="1"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                City %
-              </label>
-              <input
-                type="text"
-                value={`${cityPercent}%`}
-                readOnly
-                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                GC76000 (Local Penalty)
-              </label>
-              <input
-                type="number"
-                value={gc76000}
-                onChange={(e) => setGc76000(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                min="0"
-                step="0.1"
-              />
-            </div>
-          </div>
-
-          {/* Dates and Violation Type Row */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Violation Date
-              </label>
-              <input
-                type="date"
-                value={violationDate}
-                onChange={(e) => setViolationDate(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Disposition Date
-              </label>
-              <input
-                type="date"
-                value={dispDate}
-                onChange={(e) => setDispDate(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Violation Type
-              </label>
-              <select
-                value={violationType}
-                onChange={(e) => setViolationType(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="Infraction">Infraction</option>
-                <option value="Misdemeanor">Misdemeanor</option>
-                <option value="Felony">Felony</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Citation-Specific Fields (Conditional) */}
-          {citationType === 'DUI' && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                DUI-Specific Fields
-              </h3>
-              <div className="mb-4">
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={hasLabPenalty}
-                    onChange={(e) => setHasLabPenalty(e.target.checked)}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  />
-                  <span className="text-sm font-medium text-gray-700">
-                    Include Lab Penalty
-                  </span>
+              {/* Citation Type Selector */}
+              <div className="mb-6 pb-6 border-b border-gray-200">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Citation Type
                 </label>
+                <select
+                  value={citationType}
+                  onChange={(e) => setCitationType(e.target.value)}
+                  className="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  {availableCitationTypes.map(type => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-                {hasLabPenalty && (
+              {/* Case Identification Row */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Case Number
+                  </label>
                   <input
+                    id="caseNumber"
+                    type="text"
+                    value={caseNumber}
+                    onChange={(e) => setCaseNumber(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="CR 123456"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Base Fine ($)
+                  </label>
+                  <input
+                    id="baseFine"
                     type="number"
-                    value={labPenaltyAmount}
-                    onChange={(e) => setLabPenaltyAmount(e.target.value)}
-                    className="mt-2 w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Lab Penalty Amount"
+                    value={baseFine}
+                    onChange={(e) => setBaseFine(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     min="0"
                     step="1"
                   />
-                )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Total Base (Calculated)
+                  </label>
+                  <input
+                    type="text"
+                    value={result ? formatCurrency(result.calculated.enhancedBase) : '$0.00'}
+                    readOnly
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600"
+                  />
+                </div>
+              </div>
+
+              {/* Agency Information Row */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Arresting Agency
+                  </label>
+                  <select
+                    id="arrestingAgency"
+                    value={arrestingAgency}
+                    onChange={(e) => setArrestingAgency(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  >
+                    <option value="PD">PD</option>
+                    <option value="Sheriff">Sheriff</option>
+                    <option value="CHP">CHP</option>
+                    <option value="Fish & Game">Fish & Game</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Sub Agency
+                  </label>
+                  <input
+                    type="text"
+                    value={subAgency}
+                    onChange={(e) => setSubAgency(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Optional"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Agency Local
+                  </label>
+                  <select
+                    id="agencyLocal"
+                    value={agencyLocal}
+                    onChange={(e) => setAgencyLocal(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  >
+                    <option value="City">City</option>
+                    <option value="County">County</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Distribution Percentages Row */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    County % (City auto-calculated)
+                  </label>
+                  <input
+                    id="countyPercent"
+                    type="number"
+                    value={countyPercent}
+                    onChange={(e) => {
+                      const value = Math.min(100, Math.max(0, parseFloat(e.target.value) || 0));
+                      setCountyPercent(value);
+                    }}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    min="0"
+                    max="100"
+                    step="1"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    City %
+                  </label>
+                  <input
+                    type="text"
+                    value={`${cityPercent}%`}
+                    readOnly
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    GC76000 (Local Penalty)
+                  </label>
+                  <input
+                    type="number"
+                    value={gc76000}
+                    onChange={(e) => setGc76000(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    min="0"
+                    step="0.1"
+                  />
+                </div>
+              </div>
+
+              {/* Dates and Violation Type Row */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Violation Date
+                  </label>
+                  <input
+                    id="violationDate"
+                    type="date"
+                    value={violationDate}
+                    onChange={(e) => setViolationDate(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Disposition Date
+                  </label>
+                  <input
+                    type="date"
+                    value={dispDate}
+                    onChange={(e) => setDispDate(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Violation Type
+                  </label>
+                  <select
+                    id="violationType"
+                    value={violationType}
+                    onChange={(e) => setViolationType(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  >
+                    <option value="Infraction">Infraction</option>
+                    <option value="Misdemeanor">Misdemeanor</option>
+                    <option value="Felony">Felony</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* DUI-Specific Fields */}
+              {citationType === 'DUI' && (
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    DUI-Specific Fields
+                  </h3>
+                  <div className="mb-4">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={hasLabPenalty}
+                        onChange={(e) => setHasLabPenalty(e.target.checked)}
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <span className="text-sm font-medium text-gray-700">
+                        Include Lab Penalty
+                      </span>
+                    </label>
+
+                    {hasLabPenalty && (
+                      <input
+                        type="number"
+                        value={labPenaltyAmount}
+                        onChange={(e) => setLabPenaltyAmount(e.target.value)}
+                        className="mt-2 w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Lab Penalty Amount"
+                        min="0"
+                        step="1"
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Domestic Violence-Specific Fields */}
+              {citationType === 'Domestic Violence' && (
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Domestic Violence-Specific Fields
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Probation Supervision Fee ($)
+                      </label>
+                      <input
+                        type="number"
+                        value={probationSupervision}
+                        onChange={(e) => setProbationSupervision(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="435"
+                        min="0"
+                        step="1"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        PC 1203.1b - Typical amount: $435
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Calculate Button */}
+              <div className="mt-8">
+                <button
+                  onClick={handleCalculate}
+                  className="w-full px-8 py-5 bg-blue-600 text-white text-2xl font-bold rounded-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl"
+                >
+                  Calculate Distribution Report
+                </button>
               </div>
             </div>
-          )}
-
-          {/* Calculate Button */}
-          <div className="mt-8">
-            <button
-              onClick={handleCalculate}
-              className="w-full px-8 py-5 bg-blue-600 text-white text-2xl font-bold rounded-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl"
-            >
-              Calculate Distribution Report
-            </button>
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </div>
   );

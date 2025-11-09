@@ -210,11 +210,53 @@ export const STANDARD_CONFIG = {
 };
 
 /**
+ * Domestic Violence Citation Configuration (PC 273.5)
+ * - No base reductions (different from DUI)
+ * - Standard penalties apply
+ * - DV-specific fees and assessments
+ * - Higher restitution fines
+ */
+export const DOMESTIC_VIOLENCE_CONFIG = {
+  name: 'Domestic Violence (PC 273.5)',
+  code: 'DOMESTIC_VIOLENCE',
+  modificationType: 'NONE',
+  modifications: [],
+  penalties: COMMON_PENALTIES,
+  assessments: [
+    ...COMMON_ASSESSMENTS,
+    {
+      code: 'PC 1203.097',
+      desc: 'DV Fee',
+      entity: 'COUNTY',
+      amount: 400,
+      isPercentage: false
+    },
+    {
+      code: 'PC 1202.4(b)',
+      desc: 'State Restitution Fine',
+      entity: 'STATE',
+      amount: 300,
+      isPercentage: false
+    }
+  ],
+  optionalItems: [
+    {
+      code: 'PC 1203.1b',
+      desc: 'Probation Supervision',
+      entity: 'COUNTY',
+      condition: (inputs) => inputs.probationSupervision && inputs.probationSupervision > 0,
+      getAmount: (inputs) => parseFloat(inputs.probationSupervision || 0)
+    }
+  ]
+};
+
+/**
  * Citation type registry
  */
 export const CITATION_TYPES = {
   DUI: DUI_CONFIG,
-  STANDARD: STANDARD_CONFIG
+  STANDARD: STANDARD_CONFIG,
+  'Domestic Violence': DOMESTIC_VIOLENCE_CONFIG
 };
 
 /**

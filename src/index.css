@@ -1,3 +1,6 @@
+/* Import animation styles - must be first */
+@import './styles/animations.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
