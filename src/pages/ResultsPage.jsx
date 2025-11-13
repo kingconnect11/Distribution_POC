@@ -1,11 +1,15 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useCalculation } from '../context/CalculationContext';
 import ResultsReport from '../ResultsReport.jsx';
 
 const ResultsPage = () => {
   const navigate = useNavigate();
-  const { calculationResults } = useCalculation();
+  const location = useLocation();
+  const { calculationResults: contextResults } = useCalculation();
+
+  // Use location state if available, otherwise fall back to context
+  const calculationResults = location.state?.calculationResults || contextResults;
 
   // If no calculation results, redirect to landing page
   if (!calculationResults) {

@@ -52,8 +52,10 @@ const ExampleCitationsPage = () => {
   const viewFullResults = (example) => {
     // Store results in context
     updateResults(preCalculatedResults[example.id]);
-    // Navigate to results page
-    navigate('/results');
+    // Navigate to results page with state to avoid timing issues
+    navigate('/results', {
+      state: { calculationResults: preCalculatedResults[example.id] }
+    });
   };
 
   const formatCurrency = (amount) => {
