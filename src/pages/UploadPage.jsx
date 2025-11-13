@@ -94,11 +94,6 @@ const UploadPage = () => {
               className="bg-white rounded-lg shadow-md border-2 border-gray-200 hover:border-blue-400 transition-all p-6"
             >
               <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0">
-                  <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
                 <div className="flex-grow">
                   <h3 className="text-lg font-bold text-gray-900 mb-1">{sample.displayName}</h3>
                   <p className="text-sm text-gray-600 mb-3">
@@ -116,18 +111,13 @@ const UploadPage = () => {
 
       {/* Info Box */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <div className="flex items-start space-x-3">
-          <svg className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <div>
-            <h4 className="text-sm font-bold text-blue-900 mb-1">Demo Mode</h4>
-            <p className="text-sm text-blue-800">
-              This is a demonstration using pre-configured sample citations. The production version will process
-              any California citation using advanced OCR technology. To test the upload feature, use the
-              "Try Demo Citation" button or manually create a file with one of the sample filenames shown above.
-            </p>
-          </div>
+        <div>
+          <h4 className="text-sm font-bold text-blue-900 mb-1">ℹ️ Demo Mode</h4>
+          <p className="text-sm text-blue-800">
+            This is a demonstration using pre-configured sample citations. The production version will process
+            any California citation using advanced OCR technology. To test the upload feature, use the
+            "Try Demo Citation" button or manually create a file with one of the sample filenames shown above.
+          </p>
         </div>
       </div>
     </div>
